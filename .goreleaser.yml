@@ -1,0 +1,44 @@
+version: 2
+
+project_name: exprgrep
+
+builds:
+  - id: exprgrep
+    binary: exprgrep
+    main: .
+    env:
+      - GOEXPERIMENT=jsonv2
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+
+archives:
+  - formats: [tar.gz]
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
+checksum:
+  name_template: "checksums.txt"
+
+# Homebrew Casks: generate cask files into the dist directory by default.
+# To enable automatic push to a tap, configure the `repository` block and
+# provide a token with push access (see GoReleaser docs).
+homebrew_casks:
+  - name: exprgrep
+    # Put generated casks under `dist/Casks` by default.
+    directory: Casks
+    # Prevent GoReleaser from trying to push the cask; change to false to enable
+    # automatic pushes once `repository` is configured.
+    skip_upload: true
+    # Use the produced binary as the cask's artifact and install the binary.
+    binaries:
+      - exprgrep
+    homepage: "https://github.com/{{ .Env.GITHUB_REPOSITORY }}"
+    description: "Filter JSONL lines by an expr expression"
+    commit_msg_template: "Brew cask update for {{ .ProjectName }} version {{ .Tag }}"
+
