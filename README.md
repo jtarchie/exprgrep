@@ -17,26 +17,38 @@ Run (reads JSONL from stdin; expression is first argument):
 cat input.jsonl | ./exprgrep 'age > 30 && active == true'
 ```
 
+Allow references to fields that may not exist in every record (missing fields
+evaluate to `nil` instead of causing an error):
+
+```bash
+cat input.jsonl | ./exprgrep --allow-missing-fields 'age != nil && age > 30'
+```
+
+## Exit codes
+
+| Code | Meaning                            |
+| ---- | ---------------------------------- |
+| 0    | At least one line matched          |
+| 1    | No lines matched                   |
+| 2    | Error (bad expression, usage, etc) |
+
 ## Notes
 
 - The program expects one JSON value per line (JSONL) on stdin.
 - The first argument is an `expr` expression evaluated against the parsed JSON
   value.
 - If the expression evaluates to a boolean `true`, the original line is printed.
-- This project was tested using the experimental `encoding/json/v2` API;
-  building with the `jsonv2` experiment enabled is recommended to reproduce the
-  same behavior:
+- Non-boolean truthy values (e.g. a non-empty string) also cause the line to be
+  printed.
+- Lines with invalid JSON are skipped with a warning on stderr.
+- This project uses the experimental `encoding/json/v2` API; building with the
+  `jsonv2` experiment enabled is required:
 
 ```bash
 GOEXPERIMENT=jsonv2 go build -o exprgrep .
 ```
 
-Optional: fetch the `expr` module (the build will do this automatically):
-
-```bash
-go get github.com/expr-lang/expr@latest
-```
-
 ## File
 
 - `main.go` — the CLI implementation
+- `main_test.go` — unit tests
