@@ -3,13 +3,22 @@
 Small CLI that reads JSON Lines (JSONL) from stdin and prints lines that match
 an `expr` expression (using https://github.com/expr-lang/expr).
 
-## Usage
+## Install
 
-Build:
+### Homebrew
+
+```bash
+brew tap jtarchie/exprgrep https://github.com/jtarchie/exprgrep
+brew install exprgrep
+```
+
+### From source
 
 ```bash
 GOEXPERIMENT=jsonv2 go build -o exprgrep .
 ```
+
+## Usage
 
 Run (reads JSONL from stdin; expression is first argument):
 
@@ -42,11 +51,8 @@ cat input.jsonl | ./exprgrep --allow-missing-fields 'age != nil && age > 30'
   printed.
 - Lines with invalid JSON are skipped with a warning on stderr.
 - This project uses the experimental `encoding/json/v2` API; building with the
-  `jsonv2` experiment enabled is required:
-
-```bash
-GOEXPERIMENT=jsonv2 go build -o exprgrep .
-```
+  `jsonv2` experiment enabled is required (handled automatically by Homebrew and
+  the release builds).
 
 ## File
 
