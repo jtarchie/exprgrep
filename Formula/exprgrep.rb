@@ -5,20 +5,20 @@
 class Exprgrep < Formula
   desc "Filter JSONL lines by an expr expression"
   homepage "https://github.com/jtarchie/exprgrep"
-  version "0.1.0"
+  version "0.1.1"
 
   on_macos do
     if Hardware::CPU.intel?
-      url "https://github.com/jtarchie/exprgrep/releases/download/v0.1.0/exprgrep_0.1.0_darwin_amd64.tar.gz"
-      sha256 "1095030cc1dff585cb25990390ee94122684f694d1ef5e9d2e4ab1dd8b509028"
+      url "https://github.com/jtarchie/exprgrep/releases/download/v0.1.1/exprgrep_0.1.1_darwin_amd64.tar.gz"
+      sha256 "ac51efb1d26750b3b02730b7ca3385845412e47535a99097f2dfac31258b0b3c"
 
       define_method(:install) do
         bin.install "exprgrep"
       end
     end
     if Hardware::CPU.arm?
-      url "https://github.com/jtarchie/exprgrep/releases/download/v0.1.0/exprgrep_0.1.0_darwin_arm64.tar.gz"
-      sha256 "f2a09ce3bc7a95a12f090b1cac60d4f346b6a519eb29cde7c28f64af133afc4e"
+      url "https://github.com/jtarchie/exprgrep/releases/download/v0.1.1/exprgrep_0.1.1_darwin_arm64.tar.gz"
+      sha256 "67ff3b157c3330bd15d6ae10b4fb0a1a1d604a70ddad71aaa2d08f4c5424066f"
 
       define_method(:install) do
         bin.install "exprgrep"
@@ -28,15 +28,15 @@ class Exprgrep < Formula
 
   on_linux do
     if Hardware::CPU.intel? && Hardware::CPU.is_64_bit?
-      url "https://github.com/jtarchie/exprgrep/releases/download/v0.1.0/exprgrep_0.1.0_linux_amd64.tar.gz"
-      sha256 "52feab1228281c9afcf5a97360d1a9503f3ead0799bc5c2c1f5c11a177b9aa98"
+      url "https://github.com/jtarchie/exprgrep/releases/download/v0.1.1/exprgrep_0.1.1_linux_amd64.tar.gz"
+      sha256 "b9e2efe2f74225b8b577bc2200264deb932e374cb7d4c17e9941262e41534a7b"
       define_method(:install) do
         bin.install "exprgrep"
       end
     end
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/jtarchie/exprgrep/releases/download/v0.1.0/exprgrep_0.1.0_linux_arm64.tar.gz"
-      sha256 "106fb0eabd999d8eac36c5677ff47b2c8840c4e56fa9c57a3b8fbf4e89f65dd2"
+      url "https://github.com/jtarchie/exprgrep/releases/download/v0.1.1/exprgrep_0.1.1_linux_arm64.tar.gz"
+      sha256 "4297078864b94618147704cd0ec6e3ce707f1ef1d31faf472e3aef7041591ed5"
       define_method(:install) do
         bin.install "exprgrep"
       end
