@@ -11,6 +11,7 @@ func TestRun(t *testing.T) {
 	tests := []struct {
 		name        string
 		expression  string
+		outputExpr  string
 		opts        []expr.Option
 		input       string
 		wantOutput  string
@@ -96,13 +97,28 @@ func TestRun(t *testing.T) {
 			input:       "{\"data\": \"" + strings.Repeat("x", 512*1024) + "\"}",
 			wantMatched: true,
 		},
+		{
+			name:        "--output prints extracted field",
+			expression:  "age > 30",
+			outputExpr:  "name",
+			input:       "{\"age\": 35, \"name\": \"alice\"}",
+			wantOutput:  "alice\n",
+			wantMatched: true,
+		},
+		{
+			name:        "--output invalid expression returns error",
+			expression:  "age > 30",
+			outputExpr:  "!!!",
+			input:       "{\"age\": 35}",
+			wantErr:     true,
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			r := strings.NewReader(tt.input)
 			var w strings.Builder
-			matched, err := run(tt.expression, tt.opts, r, &w)
+			matched, err := run(tt.expression, tt.outputExpr, tt.opts, r, &w)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("run() error = %v, wantErr %v", err, tt.wantErr)
 				return

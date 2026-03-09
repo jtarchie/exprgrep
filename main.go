@@ -10,12 +10,21 @@ import (
 	"os"
 
 	"github.com/expr-lang/expr"
+	"github.com/expr-lang/expr/vm"
 )
 
-func run(expression string, opts []expr.Option, r io.Reader, w io.Writer) (bool, error) {
+func run(expression string, outputExpr string, opts []expr.Option, r io.Reader, w io.Writer) (bool, error) {
 	program, err := expr.Compile(expression, opts...)
 	if err != nil {
 		return false, fmt.Errorf("invalid expression: %w", err)
+	}
+
+	var outputProgram *vm.Program
+	if outputExpr != "" {
+		outputProgram, err = expr.Compile(outputExpr, opts...)
+		if err != nil {
+			return false, fmt.Errorf("invalid output expression: %w", err)
+		}
 	}
 
 	scanner := bufio.NewScanner(r)
@@ -39,17 +48,28 @@ func run(expression string, opts []expr.Option, r io.Reader, w io.Writer) (bool,
 			fmt.Fprintf(os.Stderr, "expr error: %v\n", err)
 			continue
 		}
+		isMatch := false
 		switch v := out.(type) {
 		case bool:
-			if v {
-				matched = true
-				fmt.Fprintln(bw, line)
-			}
+			isMatch = v
 		case nil:
 			// no match
 		default:
 			_ = v
-			matched = true
+			isMatch = true
+		}
+		if !isMatch {
+			continue
+		}
+		matched = true
+		if outputProgram != nil {
+			val, err := expr.Run(outputProgram, data)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "output expr error: %v\n", err)
+				continue
+			}
+			fmt.Fprintln(bw, val)
+		} else {
 			fmt.Fprintln(bw, line)
 		}
 	}
@@ -60,10 +80,11 @@ func main() {
 	log.SetFlags(0)
 
 	allowMissing := flag.Bool("allow-missing-fields", false, "treat missing JSON fields as nil instead of an error")
+	outputExpr := flag.String("output", "", "expr expression whose result is printed instead of the original line")
 	flag.Parse()
 
 	if flag.NArg() < 1 {
-		fmt.Fprintln(os.Stderr, "usage: exprgrep [--allow-missing-fields] '<expression>'")
+		fmt.Fprintln(os.Stderr, "usage: exprgrep [--allow-missing-fields] [--output '<expr>'] '<expression>'")
 		os.Exit(2)
 	}
 	expression := flag.Arg(0)
@@ -73,7 +94,7 @@ func main() {
 		opts = append(opts, expr.AllowUndefinedVariables())
 	}
 
-	matched, err := run(expression, opts, os.Stdin, os.Stdout)
+	matched, err := run(expression, *outputExpr, opts, os.Stdin, os.Stdout)
 	if err != nil {
 		log.Fatal(err)
 	}

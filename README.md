@@ -33,6 +33,20 @@ evaluate to `nil` instead of causing an error):
 cat input.jsonl | ./exprgrep --allow-missing-fields 'age != nil && age > 30'
 ```
 
+Print a specific field (or computed value) instead of the whole original line:
+
+```bash
+cat input.jsonl | ./exprgrep --output 'request_id' 'status == 500'
+```
+
+This pairs well with a second `rg` pass to find all related log lines:
+
+```bash
+rg -z 'status=500' ~/Downloads/*.json.gz \
+  | ./exprgrep --output 'request_id' 'action == "create"' \
+  | rg -z -f - ~/Downloads/*.json.gz
+```
+
 ## Exit codes
 
 | Code | Meaning                            |
