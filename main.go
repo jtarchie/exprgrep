@@ -43,7 +43,12 @@ func run(expression string, outputExpr string, opts []expr.Option, r io.Reader, 
 			fmt.Fprintf(os.Stderr, "invalid json: %v\n", err)
 			continue
 		}
-		out, err := expr.Run(program, data)
+		env := data
+		if m, ok := data.(map[string]interface{}); ok {
+			m["_line"] = line
+			env = m
+		}
+		out, err := expr.Run(program, env)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "expr error: %v\n", err)
 			continue
@@ -63,7 +68,7 @@ func run(expression string, outputExpr string, opts []expr.Option, r io.Reader, 
 		}
 		matched = true
 		if outputProgram != nil {
-			val, err := expr.Run(outputProgram, data)
+			val, err := expr.Run(outputProgram, env)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "output expr error: %v\n", err)
 				continue
