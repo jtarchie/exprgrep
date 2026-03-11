@@ -63,6 +63,9 @@ rg -z 'status=500' ~/Downloads/*.json.gz \
 - If the expression evaluates to a boolean `true`, the original line is printed.
 - Non-boolean truthy values (e.g. a non-empty string) also cause the line to be
   printed.
+- For JSON object lines, a special `_line` variable is available in expressions
+  containing the original unparsed JSON string. This works in both the filter
+  expression and `--output` expressions.
 - Lines with invalid JSON are skipped with a warning on stderr.
 - This project uses the experimental `encoding/json/v2` API; building with the
   `jsonv2` experiment enabled is required (handled automatically by Homebrew and
